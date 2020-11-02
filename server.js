@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const compression = require("compression");
 const connectDB = require("./config/db")
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -26,6 +26,14 @@ app.use(express.static("public"));
 
 // routes
 app.use(require("./routes/api.js"));
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"))
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
